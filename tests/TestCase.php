@@ -22,4 +22,18 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         return $app;
     }
+
+    public function setUp()
+    {
+        parent::setUp();
+        @unlink(base_path('storage/database.sqlite'));
+        @copy(base_path('storage/database.sqlite.blank'), base_path('storage/database.sqlite'));
+        Artisan::call('migrate');
+    }
+
+    public function tearDown()
+    {
+        Artisan::call('migrate:reset');
+        parent::tearDown();
+    }
 }
