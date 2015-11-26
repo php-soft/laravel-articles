@@ -4,19 +4,15 @@ use PhpSoft\Articles\Models\Category;
 
 class CategoryControllerTest extends TestCase
 {
-    public function testCreateNotAuthAndPermission()
+    public function testCreateNotAuth()
     {
         $res = $this->call('POST', '/categories');
         $this->assertEquals(401, $res->getStatusCode());
-        $user = factory(App\User::class)->make();
-        Auth::login($user);
-        $res = $this->call('POST', '/categories');
-        $this->assertEquals(403, $res->getStatusCode());
     }
 
     public function testCreateValidateFailure()
     {
-        $user = factory(App\User::class)->make([ 'hasRole' => true ]);
+        $user = factory(App\User::class)->make();
         Auth::login($user);
         $res = $this->call('POST', '/categories', [
             'alias' => 'This is invalid alias',
@@ -42,7 +38,7 @@ class CategoryControllerTest extends TestCase
 
     public function testCreateSuccess()
     {
-        $user = factory(App\User::class)->make([ 'hasRole' => true ]);
+        $user = factory(App\User::class)->make();
         Auth::login($user);
         $res = $this->call('POST', '/categories', [
             'name' => 'Example Category',
@@ -62,7 +58,7 @@ class CategoryControllerTest extends TestCase
 
     public function testCreateExistsAlias()
     {
-        $user = factory(App\User::class)->make([ 'hasRole' => true ]);
+        $user = factory(App\User::class)->make();
         Auth::login($user);
         $category = factory(Category::class)->create();
         $res = $this->call('POST', '/categories', [
@@ -80,7 +76,7 @@ class CategoryControllerTest extends TestCase
 
     public function testCreateWithParentIdNotExists()
     {
-        $user = factory(App\User::class)->make([ 'hasRole' => true ]);
+        $user = factory(App\User::class)->make();
         Auth::login($user);
         $res = $this->call('POST', '/categories', [
             'name' => 'Example Category',
@@ -95,7 +91,7 @@ class CategoryControllerTest extends TestCase
     public function testCreateWithParentIdExists()
     {
         $categoryParent = factory(Category::class)->create();
-        $user = factory(App\User::class)->make([ 'hasRole' => true ]);
+        $user = factory(App\User::class)->make();
         Auth::login($user);
         $res = $this->call('POST', '/categories', [
             'name' => 'Example Category',
