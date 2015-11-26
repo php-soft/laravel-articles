@@ -6,9 +6,6 @@ use Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 
-/**
- * Category REST
- */
 class CategoryController extends Controller
 {
     private $categoryModel = '';
