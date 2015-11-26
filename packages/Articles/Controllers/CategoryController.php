@@ -1,9 +1,11 @@
 <?php
 namespace PhpSoft\Articles\Controllers;
+
 use Input;
 use Validator;
 use Illuminate\Http\Request;
 use App\Http\Requests;
+
 /**
  * Category REST
  */

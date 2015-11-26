@@ -32,7 +32,8 @@ class ArticleServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/phpsoft.article.php', 'phpsoft.article'
+            __DIR__ . '/../config/phpsoft.article.php',
+            'phpsoft.article'
         );
 
         $this->registerCommands();
