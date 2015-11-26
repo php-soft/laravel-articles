@@ -137,6 +137,9 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
+        PhpSoft\ArrayView\Providers\ArrayViewServiceProvider::class,
+        PhpSoft\Articles\Providers\ArticleServiceProvider::class,
+
         /*
          * Application Service Providers...
          */

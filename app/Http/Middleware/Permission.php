@@ -1,11 +1,9 @@
 <?php
-
 namespace App\Http\Middleware;
-
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
-class Authenticate
+class Permission
 {
     /**
      * The Guard implementation.
@@ -13,7 +11,6 @@ class Authenticate
      * @var Guard
      */
     protected $auth;
-
     /**
      * Create a new filter instance.
      *
@@ -24,7 +21,6 @@ class Authenticate
     {
         $this->auth = $auth;
     }
-
     /**
      * Handle an incoming request.
      *
@@ -32,11 +28,23 @@ class Authenticate
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $permission='manage', $role = 'admin')
     {
-        if ($this->auth->guest()) {
-            return response()->json(null, 401);
+        if (!$this->checkPermission($permission, $role)) {
+            return response()->json(null, 403);
         }
         return $next($request);
+    }
+    /**
+     * Check permission
+     *
+     * @return boolean
+     */
+    protected function checkPermission($permission = 'manage', $role = 'admin')
+    {
+        if ($this->auth->guest()) {
+            return false;
+        }
+        return $this->auth->user()->can($permission) || $this->auth->user()->hasRole($role);
     }
 }

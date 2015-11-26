@@ -19,3 +19,15 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'remember_token' => str_random(10),
     ];
 });
+
+$factory->define(PhpSoft\Articles\Models\Category::class, function ($faker) {
+    return [
+        'name' => $faker->name,
+        'alias' => $faker->slug,
+        'image' => $faker->uuid,
+        'description' => $faker->text,
+        'parent_id' => 0,
+        'order' => 0,
+        'status' => 1,
+    ];
+});

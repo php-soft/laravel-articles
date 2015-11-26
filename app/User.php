@@ -36,4 +36,15 @@ class User extends Model implements AuthenticatableContract,
      * @var array
      */
     protected $hidden = ['password', 'remember_token'];
+
+    /**
+     * [hasRole description]
+     *
+     * @param  [type]  $role [description]
+     * @return boolean       [description]
+     */
+    public function hasRole($role = null)
+    {
+        return isset($this->hasRole) ? $this->hasRole : false;
+    }
 }
