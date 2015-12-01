@@ -1,4 +1,3 @@
-
 <?php
 // article configurations
 return [

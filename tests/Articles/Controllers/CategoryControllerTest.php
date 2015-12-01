@@ -51,7 +51,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals('Example Category', $results->entities[0]->name);
         $this->assertEquals(null, $results->entities[0]->description);
         $this->assertEquals(null, $results->entities[0]->image);
-        $this->assertEquals(0, $results->entities[0]->parentId);
+        $this->assertEquals(0, $results->entities[0]->parent->id);
         $this->assertEquals(0, $results->entities[0]->order);
         $this->assertEquals(1, $results->entities[0]->status);
     }
@@ -99,6 +99,6 @@ class CategoryControllerTest extends TestCase
         ]);
         $this->assertEquals(201, $res->getStatusCode());
         $results = json_decode($res->getContent());
-        $this->assertEquals($categoryParent->id, $results->entities[0]->parentId);
+        $this->assertEquals($categoryParent->id, $results->entities[0]->parent->id);
     }
 }

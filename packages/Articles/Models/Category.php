@@ -36,6 +36,7 @@ class Category extends Model
             $attributes['alias'] = Str::slug($attributes['name'])
                 .'-'.Uuid::generate(4);
         }
+
         return parent::create($attributes)->fresh();
     }
 }
