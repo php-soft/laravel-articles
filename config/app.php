@@ -139,6 +139,7 @@ return [
 
         PhpSoft\ArrayView\Providers\ArrayViewServiceProvider::class,
         PhpSoft\Articles\Providers\ArticleServiceProvider::class,
+        PhpSoft\Articles\Providers\EventServiceProvider::class,
 
         /*
          * Application Service Providers...
