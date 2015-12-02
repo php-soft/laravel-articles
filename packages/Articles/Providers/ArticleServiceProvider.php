@@ -1,9 +1,9 @@
 <?php
 
-namespace PhpSoft\Comments\Providers;
+namespace PhpSoft\Articles\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use PhpSoft\Comments\Commands\MigrationCommand;
+use PhpSoft\Articles\Commands\MigrationCommand;
 
 class ArticleServiceProvider extends ServiceProvider
 {
@@ -31,6 +31,11 @@ class ArticleServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/phpsoft.article.php',
+            'phpsoft.article'
+        );
+
         $this->registerCommands();
     }
 

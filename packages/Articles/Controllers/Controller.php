@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpSoft\Comments\Controllers;
+namespace PhpSoft\Articles\Controllers;
 
 use App\Http\Controllers\Controller as AppController;
 
