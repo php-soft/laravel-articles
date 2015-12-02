@@ -8,7 +8,7 @@ use App\Http\Requests;
 
 class CategoryController extends Controller
 {
-    private $categoryModel = '';
+    private $categoryModel;
 
     /**
      * Construct controller
