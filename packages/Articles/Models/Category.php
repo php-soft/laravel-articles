@@ -40,4 +40,30 @@ class Category extends Model
 
         return parent::create($attributes)->fresh();
     }
+
+    /**
+     * Update the model in the database.
+     *
+     * @param  array  $attributes
+     * @return bool|int
+     */
+    public function update(array $attributes = [])
+    {
+        if (isset($attributes['alias']) && empty($attributes['alias'])) {
+            $name = $this->name;
+
+            if (isset($attributes['name'])) {
+                $name = $attributes['name'];
+            }
+
+            $attributes['alias'] = Str::slug($name)
+                .'-'.Uuid::generate(4);
+        }
+
+        if (!parent::update($attributes)) {
+            throw new Exception('Cannot update category.');
+        }
+
+        return $this;
+    }
 }
