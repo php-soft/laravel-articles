@@ -6,6 +6,9 @@ use Auth;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Support\Str;
+use Webpatser\Uuid\Uuid;
+
 class Category extends Model
 {
     /**
@@ -30,6 +33,11 @@ class Category extends Model
      */
     public static function create(array $attributes = [])
     {
+        if (empty($attributes['alias'])) {
+            $attributes['alias'] = Str::slug($attributes['name'])
+                .'-'. Uuid::generate(4);
+        }
+
         return parent::create($attributes)->fresh();
     }
 }

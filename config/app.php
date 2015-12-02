@@ -139,14 +139,12 @@ return [
 
         PhpSoft\ArrayView\Providers\ArrayViewServiceProvider::class,
         PhpSoft\Articles\Providers\ArticleServiceProvider::class,
-        PhpSoft\Articles\Providers\EventServiceProvider::class,
 
         /*
          * Application Service Providers...
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
     ],
