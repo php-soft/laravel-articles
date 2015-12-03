@@ -32,8 +32,7 @@ class ArticleController extends Controller
             'alias'       => 'regex:/^[a-z0-9\-]+/|unique:articles',
             'image'       => 'string',
             'description' => 'string',
-            'order'       => 'numeric',
-            'status'      => 'numeric',
+            'order'       => 'numeric'
         ]);
 
         if ($validator->fails()) {

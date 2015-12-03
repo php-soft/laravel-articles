@@ -1,6 +1,6 @@
 <?php
 
-$this->extract($category, [
+$this->extract($article, [
     'id',
     'title',
     'content',
@@ -11,6 +11,6 @@ $this->extract($category, [
     'status',
 ]);
 
-$this->set('parent', ['id' => $category->parent_id]);
+$this->set('user', ['id' => $article->user_id]);
 
-$this->set('createdAt', date('c', strtotime($category->created_at)));
+$this->set('createdAt', date('c', strtotime($article->created_at)));

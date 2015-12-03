@@ -33,3 +33,17 @@ $factory->define(PhpSoft\Articles\Models\Category::class, function ($faker) {
         'status' => 1,
     ];
 });
+
+$factory->define(PhpSoft\Articles\Models\Article::class, function($faker) {
+
+    return [
+        'title' => $faker->text,
+        'content' => $faker->text,
+        'alias' => $faker->slug,
+        'image' => $faker->uuid,
+        'description' => $faker->text,
+        'user_id' => 1,
+        'order' => 0,
+        'status' => 1
+    ];
+});

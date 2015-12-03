@@ -28,7 +28,7 @@ class Article extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'title', 'content', 'alias', 'image', 'description', 'order', 'status'];
+    protected $fillable = ['user_id', 'title', 'content', 'alias', 'image', 'description', 'order'];
 
     /**
      * Create the model in the database.
@@ -39,7 +39,7 @@ class Article extends Model
     public static function create(array $attributes = [])
     {
         if (empty($attributes['alias'])) {
-            $attributes['alias'] = Str::slug($attributes['name'])
+            $attributes['alias'] = Str::slug($attributes['title'])
                 .'-'. Uuid::generate(4);
         }
 
