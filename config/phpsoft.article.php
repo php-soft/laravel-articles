@@ -2,5 +2,8 @@
 // article configurations
 return [
     // Category model defined
-    'categoryModel'  => PhpSoft\Articles\Models\Category::class,
+    'categoryModel'  => PhpSoft\Article\Models\Category::class,
+
+    // Article model defined
+    'articleModel'  => PhpSoft\Article\Models\Article::class,
 ];
