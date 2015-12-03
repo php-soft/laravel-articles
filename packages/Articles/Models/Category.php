@@ -5,12 +5,15 @@ namespace PhpSoft\Articles\Models;
 use Auth;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Str;
 use Webpatser\Uuid\Uuid;
 
 class Category extends Model
 {
+    use SoftDeletes;
+
     /**
      * The database table used by the model.
      *
