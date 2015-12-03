@@ -204,4 +204,27 @@ class CategoryController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        $categoryModel = $this->categoryModel;
+
+        // retrieve category
+        $category = $categoryModel::withTrashed()->where('id', $id)->first();
+
+        // check exists
+        if (empty($category)) {
+            return response()->json(null, 404);
+        }
+
+        $category->forceDelete();
+
+        return response()->json(null, 204);
+    }
 }
