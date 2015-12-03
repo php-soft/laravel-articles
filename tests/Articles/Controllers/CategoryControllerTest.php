@@ -306,7 +306,7 @@ class CategoryControllerTest extends TestCase
     public function testReadFound()
     {
         // test read found with id
-        $category = factory(Category::class)->create(['status' => 1]);
+        $category = factory(Category::class)->create();
 
         $res = $this->call('GET', '/categories/' . $category->id);
 
@@ -351,7 +351,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals('404', $res->getStatusCode());
 
         // test category type has enable
-        $category = factory(Category::class)->create(['status' => 1]);
+        $category = factory(Category::class)->create();
         $res = $this->call('POST', '/categories/' . $category->id . '/enable');
         $this->assertEquals('204', $res->getStatusCode());
 
@@ -375,7 +375,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals('404', $res->getStatusCode());
 
         // test set disable
-        $category = factory(Category::class)->create(['status' => 1]);
+        $category = factory(Category::class)->create();
         $res = $this->call('POST', '/categories/' . $category->id . '/disable');
         $this->assertEquals('204', $res->getStatusCode());
         $category = Category::find($category->id);
