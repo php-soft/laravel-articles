@@ -142,9 +142,9 @@ class CategoryController extends Controller
     public function restoreFromTrash($id)
     {
         $categoryModel = $this->categoryModel;
-        $category = $categoryModel::onlyTrashed()->where('id', $id);
+        $category = $categoryModel::onlyTrashed()->where('id', $id)->first();
 
-        if (!$category->count()) {
+        if (!$category) {
             return response()->json(null, 404);
         }
 
