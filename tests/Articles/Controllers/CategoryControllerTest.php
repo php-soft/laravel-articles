@@ -306,7 +306,7 @@ class CategoryControllerTest extends TestCase
     public function testReadFound()
     {
         // test read found with id
-        $category = factory(Category::class)->create();
+        $category = factory(Category::class)->create(['status' => 1]);
 
         $res = $this->call('GET', '/categories/' . $category->id);
 
@@ -319,6 +319,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals($category->alias, $results->entities[0]->alias);
         $this->assertEquals($category->description, $results->entities[0]->description);
         $this->assertEquals($category->image, $results->entities[0]->image);
+        $this->assertTrue($results->entities[0]->isEnable);
 
         // test read found with alias
         $category = factory(Category::class)->create(['alias' => 'example-alias']);
@@ -334,5 +335,54 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals($category->alias, $results->entities[0]->alias);
         $this->assertEquals($category->description, $results->entities[0]->description);
         $this->assertEquals($category->image, $results->entities[0]->image);
+    }
+
+    public function testEnable()
+    {
+        // test don't login
+        $res = $this->call('POST', '/categories/0/enable');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        // test find not found
+        $res = $this->call('POST', '/categories/1/enable');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test category type has enable
+        $category = factory(Category::class)->create(['status' => 1]);
+        $res = $this->call('POST', '/categories/' . $category->id . '/enable');
+        $this->assertEquals('204', $res->getStatusCode());
+
+        // test set enable
+        $category->disable();
+        $res = $this->call('POST', '/categories/' . $category->id . '/enable');
+        $this->assertEquals('204', $res->getStatusCode());
+        $category = Category::find($category->id);
+        $this->assertEquals(true, $category->isEnable());
+    }
+
+    public function testDisable()
+    {
+        $res = $this->call('POST', '/categories/0/disable');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+        // test find not found
+        $res = $this->call('POST', '/categories/1/disable');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test set disable
+        $category = factory(Category::class)->create(['status' => 1]);
+        $res = $this->call('POST', '/categories/' . $category->id . '/disable');
+        $this->assertEquals('204', $res->getStatusCode());
+        $category = Category::find($category->id);
+        $this->assertEquals(false, $category->isEnable());
+
+        // test category type has disable
+        $res = $this->call('POST', '/categories/' . $category->id . '/disable');
+        $this->assertEquals('204', $res->getStatusCode());
     }
 }

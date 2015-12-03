@@ -18,6 +18,8 @@ class Category extends Model
      */
     protected $table = 'article_categories';
 
+    const STATUS_ENABLE = 1;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -82,5 +84,34 @@ class Category extends Model
         }
 
         return parent::where('alias', $idOrAlias)->first();
+    }
+
+    /**
+     * set status enable
+     * @return boolean
+     */
+    public function enable()
+    {
+        $this->status = $this->status | Category::STATUS_ENABLE;
+        return $this->save();
+    }
+
+    /**
+     * set status disable
+     * @return boolean
+     */
+    public function disable()
+    {
+        $this->status = $this->status & ~Category::STATUS_ENABLE;
+        return $this->save();
+    }
+
+    /**
+     * check status enable
+     * @return boolean [description]
+     */
+    public function isEnable()
+    {
+        return Category::STATUS_ENABLE == ($this->status & Category::STATUS_ENABLE);
     }
 }
