@@ -92,4 +92,24 @@ class CategoryController extends Controller
             'category' => $category
         ]), 200);
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $idOrAlias
+     * @return Response
+     */
+    public function show($idOrAlias)
+    {
+        $categoryModel = $this->categoryModel;
+        $category = $categoryModel::findByIdOrAlias($idOrAlias);
+
+        if (empty($category)) {
+            return response()->json(null, 404);
+        }
+
+        return response()->json(arrayView('phpsoft.articles::category/read', [
+            'category' => $category
+        ]), 200);
+    }
 }

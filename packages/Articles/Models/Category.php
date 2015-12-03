@@ -66,4 +66,21 @@ class Category extends Model
 
         return $this;
     }
+
+    /**
+     * Find by id or alias
+     *
+     * @param  string $idOrAlias
+     * @return Category
+     */
+    public static function findByIdOrAlias($idOrAlias)
+    {
+        $category = parent::find($idOrAlias);
+
+        if ($category) {
+            return $category;
+        }
+
+        return parent::where('alias', $idOrAlias)->first();
+    }
 }
