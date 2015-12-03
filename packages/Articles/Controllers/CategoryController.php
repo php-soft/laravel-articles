@@ -204,4 +204,28 @@ class CategoryController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index(Request $request)
+    {
+        $isTrash = $request->is('categories/trash');
+        $categoryModel = $this->categoryModel;
+
+        $categories = $categoryModel::browse([
+            'order'     => [ Input::get('sort', 'id') => Input::get('direction', 'desc') ],
+            'limit'     => ($limit = (int)Input::get('limit', 25)),
+            'offset'    => (Input::get('page', 1) - 1) * $limit,
+            'cursor'    => Input::get('cursor'),
+            'filters'   => $request->all(),
+            'trash'     => $isTrash
+        ]);
+
+        return response()->json(arrayView('phpsoft.articles::category/browse', [
+            'categories' => $categories,
+        ]), 200);
+    }
 }

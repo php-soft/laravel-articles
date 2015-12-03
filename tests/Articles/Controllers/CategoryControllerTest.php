@@ -432,4 +432,350 @@ class CategoryControllerTest extends TestCase
         $existsTrash = Category::onlyTrashed()->count();
         $this->assertEquals(0, $existsTrash);
     }
+
+
+    public function testBrowseNotFound()
+    {
+        $res = $this->call('GET', '/categories');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(0, count($results->entities));
+    }
+
+    public function testBrowseFound()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create();
+        }
+
+        $res = $this->call('GET', '/categories');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(count($categories), count($results->entities));
+        for ($i = 0; $i < 10; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+    }
+
+    public function testBrowseWithScroll()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create();
+        }
+
+        // 5 items first
+        $res = $this->call('GET', '/categories?limit=5');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, count($results->entities));
+        for ($i = 0; $i < 5; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+
+        // 5 items next
+        $nextLink = $results->links->next->href;
+        $res = $this->call('GET', $nextLink);
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, count($results->entities));
+        for ($i = 0; $i < 5; ++$i) {
+            $this->assertEquals($categories[4 - $i]->id, $results->entities[$i]->id);
+        }
+
+        // over list
+        $nextLink = $results->links->next->href;
+        $res = $this->call('GET', $nextLink);
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(0, count($results->entities));
+    }
+
+    public function testBrowseWithPagination()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create();
+        }
+
+        // 5 items first
+        $res = $this->call('GET', '/categories?limit=5');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, count($results->entities));
+        for ($i = 0; $i < 5; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+
+        // 5 items next
+        $res = $this->call('GET', '/categories?limit=5&page=2');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, count($results->entities));
+        for ($i = 0; $i < 5; ++$i) {
+            $this->assertEquals($categories[4 - $i]->id, $results->entities[$i]->id);
+        }
+
+        // over list
+        $res = $this->call('GET', '/categories?limit=5&page=3');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(0, count($results->entities));
+    }
+
+    public function testBrowseWithSort()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create([
+                'name' => 9 - $i,
+            ]);
+        }
+
+        $res = $this->call('GET', '/categories');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, count($results->entities));
+        for ($i = 0; $i < 10; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+
+        $res = $this->call('GET', '/categories?sort=name');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, count($results->entities));
+        for ($i = 0; $i < 10; ++$i) {
+            $this->assertEquals($categories[$i]->id, $results->entities[$i]->id);
+        }
+
+        $res = $this->call('GET', '/categories?sort=name&direction=asc');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, count($results->entities));
+        for ($i = 0; $i < 10; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+    }
+
+    public function testBrowseWithFilter()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create([
+                'name' => 'Test' . $i,
+            ]);
+        }
+
+        $res = $this->call('GET', '/categories');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, $results->meta->total);
+        $this->assertEquals(10, count($results->entities));
+
+        $res = $this->call('GET', '/categories?name=Test0');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(1, $results->meta->total);
+        $this->assertEquals(1, count($results->entities));
+
+        $res = $this->call('GET', '/categories?name=Test%');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, $results->meta->total);
+        $this->assertEquals(10, count($results->entities));
+    }
+
+    public function testBrowseDraftNotFound()
+    {
+        $res = $this->call('GET', '/categories/trash');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(0, count($results->entities));
+    }
+
+    public function testBrowseDraftFound()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create();
+        }
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        for ($i = 1; $i <= 10; ++$i) {
+            $res = $this->call('POST', '/categories/' . $i . '/trash');
+            $this->assertEquals(204, $res->getStatusCode());
+        }
+
+        $res = $this->call('GET', '/categories/trash');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(count($categories), count($results->entities));
+        for ($i = 0; $i < 10; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+    }
+
+    public function testBrowseDraftWithScroll()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create();
+        }
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        for ($i = 1; $i <= 10; ++$i) {
+            $res = $this->call('POST', '/categories/' . $i . '/trash');
+            $this->assertEquals(204, $res->getStatusCode());
+        }
+
+        // 5 items first
+        $res = $this->call('GET', '/categories/trash?limit=5');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, count($results->entities));
+        for ($i = 0; $i < 5; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+
+        // 5 items next
+        $nextLink = $results->links->next->href;
+        $res = $this->call('GET', $nextLink);
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, count($results->entities));
+        for ($i = 0; $i < 5; ++$i) {
+            $this->assertEquals($categories[4 - $i]->id, $results->entities[$i]->id);
+        }
+
+        // over list
+        $nextLink = $results->links->next->href;
+        $res = $this->call('GET', $nextLink);
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(0, count($results->entities));
+    }
+
+    public function testBrowseDraftWithPagination()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create();
+        }
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        for ($i = 1; $i <= 10; ++$i) {
+            $res = $this->call('POST', '/categories/' . $i . '/trash');
+            $this->assertEquals(204, $res->getStatusCode());
+        }
+
+        // 5 items first
+        $res = $this->call('GET', '/categories/trash?limit=5');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, count($results->entities));
+        for ($i = 0; $i < 5; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+
+        // 5 items next
+        $res = $this->call('GET', '/categories/trash?limit=5&page=2');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, count($results->entities));
+        for ($i = 0; $i < 5; ++$i) {
+            $this->assertEquals($categories[4 - $i]->id, $results->entities[$i]->id);
+        }
+
+        // over list
+        $res = $this->call('GET', '/categories/trash?limit=5&page=3');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(0, count($results->entities));
+    }
+
+    public function testBrowseDraftWithSort()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create([
+                'name' => 9 - $i,
+            ]);
+        }
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        for ($i = 1; $i <= 10; ++$i) {
+            $res = $this->call('POST', '/categories/' . $i . '/trash');
+            $this->assertEquals(204, $res->getStatusCode());
+        }
+
+        $res = $this->call('GET', '/categories/trash');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, count($results->entities));
+        for ($i = 0; $i < 10; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+
+        $res = $this->call('GET', '/categories/trash?sort=name');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, count($results->entities));
+        for ($i = 0; $i < 10; ++$i) {
+            $this->assertEquals($categories[$i]->id, $results->entities[$i]->id);
+        }
+
+        $res = $this->call('GET', '/categories/trash?sort=name&direction=asc');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, count($results->entities));
+        for ($i = 0; $i < 10; ++$i) {
+            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+        }
+    }
+
+    public function testBrowseDraftWithFilter()
+    {
+        $categories = [];
+        for ($i = 0; $i < 10; ++$i) {
+            $categories[] = factory(Category::class)->create([
+                'name' => 'Test' . $i,
+            ]);
+        }
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        for ($i = 1; $i <= 10; ++$i) {
+            $res = $this->call('POST', '/categories/' . $i . '/trash');
+            $this->assertEquals(204, $res->getStatusCode());
+        }
+
+        $res = $this->call('GET', '/categories/trash');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, $results->meta->total);
+        $this->assertEquals(10, count($results->entities));
+
+        $res = $this->call('GET', '/categories/trash?name=Test0');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(1, $results->meta->total);
+        $this->assertEquals(1, count($results->entities));
+
+        $res = $this->call('GET', '/categories/trash?name=Test%');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(10, $results->meta->total);
+        $this->assertEquals(10, count($results->entities));
+    }
 }
+
