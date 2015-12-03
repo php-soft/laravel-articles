@@ -295,4 +295,44 @@ class CategoryControllerTest extends TestCase
         $this->assertContains("example", $results->entities[0]->alias);
         $this->assertContains("category", $results->entities[0]->alias);
     }
+
+    public function testReadNotFound()
+    {
+        $res = $this->call('GET', '/categories/0');
+
+        $this->assertEquals(404, $res->getStatusCode());
+    }
+
+    public function testReadFound()
+    {
+        // test read found with id
+        $category = factory(Category::class)->create();
+
+        $res = $this->call('GET', '/categories/' . $category->id);
+
+        $this->assertEquals(200, $res->getStatusCode());
+
+        $results = json_decode($res->getContent());
+        $this->assertObjectHasAttribute('entities', $results);
+        $this->assertInternalType('array', $results->entities);
+        $this->assertEquals($category->name, $results->entities[0]->name);
+        $this->assertEquals($category->alias, $results->entities[0]->alias);
+        $this->assertEquals($category->description, $results->entities[0]->description);
+        $this->assertEquals($category->image, $results->entities[0]->image);
+
+        // test read found with alias
+        $category = factory(Category::class)->create(['alias' => 'example-alias']);
+
+        $res = $this->call('GET', '/categories/' . 'example-alias');
+
+        $this->assertEquals(200, $res->getStatusCode());
+
+        $results = json_decode($res->getContent());
+        $this->assertObjectHasAttribute('entities', $results);
+        $this->assertInternalType('array', $results->entities);
+        $this->assertEquals($category->name, $results->entities[0]->name);
+        $this->assertEquals($category->alias, $results->entities[0]->alias);
+        $this->assertEquals($category->description, $results->entities[0]->description);
+        $this->assertEquals($category->image, $results->entities[0]->image);
+    }
 }
