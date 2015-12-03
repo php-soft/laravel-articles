@@ -335,4 +335,51 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals($category->description, $results->entities[0]->description);
         $this->assertEquals($category->image, $results->entities[0]->image);
     }
+
+    public function testMoveToTrash()
+    {
+        // test don't login
+        $res = $this->call('POST', '/categories/1/trash');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        // test find not found
+        $res = $this->call('POST', '/categories/1/trash');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test set category is delete
+        $category = factory(Category::class)->create();
+        $res = $this->call('POST', '/categories/' . $category->id . '/trash');
+        $this->assertEquals('204', $res->getStatusCode());
+        $exists = Category::find($category->id);
+        $this->assertNull($exists);
+        $category = Category::onlyTrashed()->where('id', $category->id)->count();
+        $this->assertEquals(1, $category);
+    }
+
+    public function testRestoreFromTrash()
+    {
+        // test don't login
+        $res = $this->call('POST', '/categories/1/restore');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        // test find not found
+        $res = $this->call('POST', '/categories/1/restore');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test restore category
+        $category = factory(Category::class)->create();
+        $res = $this->call('POST', '/categories/' . $category->id . '/trash');
+        $res = $this->call('POST', '/categories/' . $category->id . '/restore');
+        $this->assertEquals('204', $res->getStatusCode());
+        $exists = Category::find($category->id);
+        $this->assertEquals($category->name, $exists->name);
+        $existsTrash = Category::onlyTrashed()->count();
+        $this->assertEquals(0, $existsTrash);
+    }
 }

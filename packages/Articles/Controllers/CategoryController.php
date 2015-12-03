@@ -112,4 +112,46 @@ class CategoryController extends Controller
             'category' => $category
         ]), 200);
     }
+
+    /**
+     * move category to trash
+     * @param  int $id
+     * @return Response
+     */
+    public function moveToTrash($id)
+    {
+        $categoryModel = $this->categoryModel;
+        $category = $categoryModel::find($id);
+
+        if (!$category) {
+            return response()->json(null, 404);
+        }
+
+        if (!$category->delete()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * restore category
+     * @param  int $id
+     * @return Response
+     */
+    public function restoreFromTrash($id)
+    {
+        $categoryModel = $this->categoryModel;
+        $category = $categoryModel::onlyTrashed()->where('id', $id);
+
+        if (!$category->count()) {
+            return response()->json(null, 404);
+        }
+
+        if (!$category->restore()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
 }
