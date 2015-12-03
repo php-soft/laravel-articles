@@ -433,6 +433,43 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(0, $existsTrash);
     }
 
+    public function testDeleteNotAuthAndPermission()
+    {
+        $res = $this->call('DELETE', '/categories/0');
+        $this->assertEquals(401, $res->getStatusCode());
+    }
+
+    public function testDeleteNotFound()
+    {
+        $user = factory(App\User::class)->make([ 'hasRole' => true ]);
+        Auth::login($user);
+
+        $res = $this->call('DELETE', '/categories/0');
+        $this->assertEquals(404, $res->getStatusCode());
+    }
+
+    public function testDeleteSuccess()
+    {
+        $category = factory(Category::class)->create();
+
+        $user = factory(App\User::class)->make([ 'hasRole' => true ]);
+        Auth::login($user);
+
+        $res = $this->call('DELETE', "/categories/{$category->id}");
+        $this->assertEquals(204, $res->getStatusCode());
+
+        $exists = Category::withTrashed()->where('id', $category->id)->first();
+        $this->assertNull($exists);
+
+        // test delete from trash
+        $category = factory(Category::class)->create();
+        $res = $this->call('POST', '/categories/' . $category->id . '/trash');
+        $this->assertEquals(204, $res->getStatusCode());
+        $res = $this->call('DELETE', "/categories/{$category->id}");
+        $this->assertEquals(204, $res->getStatusCode());
+        $exists = Category::withTrashed()->where('id', $category->id)->first();
+        $this->assertNull($exists);
+    }
 
     public function testBrowseNotFound()
     {
