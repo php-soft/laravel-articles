@@ -114,6 +114,56 @@ class CategoryController extends Controller
     }
 
     /**
+     * enable category role
+     * @param  int  $id
+     * @return Response
+     */
+    public function enable($id)
+    {
+        $categoryModel = $this->categoryModel;
+        $category = $categoryModel::find($id);
+
+        if (!$category) {
+            return response()->json(null, 404);
+        }
+
+        if ($category->isEnable()) {
+            return response()->json(null, 204);
+        }
+
+        if (!$category->enable()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * disable category role
+     * @param  int  $id
+     * @return Response
+     */
+    public function disable($id)
+    {
+        $categoryModel = $this->categoryModel;
+        $category = $categoryModel::find($id);
+
+        if (!$category) {
+            return response()->json(null, 404);
+        }
+
+        if (!$category->isEnable()) {
+            return response()->json(null, 204);
+        }
+
+        if (!$category->disable()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
      * move category to trash
      * @param  int $id
      * @return Response
