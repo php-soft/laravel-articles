@@ -44,6 +44,7 @@ $factory->define(PhpSoft\Articles\Models\Article::class, function($faker) {
         'description' => $faker->text,
         'user_id' => 1,
         'order' => 0,
-        'status' => 1
+        'status' => 1,
+        'category_id' => 1
     ];
 });

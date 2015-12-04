@@ -31,6 +31,16 @@ class Article extends Model
     protected $fillable = ['user_id', 'category_id', 'title', 'content', 'alias', 'image', 'description', 'order'];
 
     /**
+     * Make relationship to category.
+     *
+     * @return relationship
+     */
+    public function category()
+    {
+        return $this->belongsTo('PhpSoft\Articles\Models\Category', 'category_id'); // @codeCoverageIgnore
+    }
+
+    /**
      * Create the model in the database.
      *
      * @param  array  $attributes

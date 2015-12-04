@@ -28,6 +28,16 @@ namespace {
                 $table->integer('status')->default(1);
                 $table->softDeletes();
                 $table->timestamps();
+
+                $table->foreign('category_id')
+                  ->references('id')->on('article_categories')
+                  ->onDelete('cascade')
+                  ->onUpdate('cascade');
+
+                $table->foreign('user_id')
+                  ->references('id')->on('users')
+                  ->onDelete('cascade')
+                  ->onUpdate('cascade');
             });
         }
 
