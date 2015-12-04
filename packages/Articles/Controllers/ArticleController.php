@@ -30,7 +30,7 @@ class ArticleController extends Controller
             'title'       => 'required',
             'content'     => 'required',
             'category_id' => 'required|numeric|exists:article_categories,id',
-            'alias'       => 'regex:/^[a-z0-9\-]+/|unique:articles',
+            'alias'       => 'regex:/^[a-z0-9\-]+/',
             'image'       => 'string',
             'description' => 'string',
             'order'       => 'numeric'

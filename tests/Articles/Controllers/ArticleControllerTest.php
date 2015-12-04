@@ -100,25 +100,4 @@ class ArticleControllerTest extends TestCase
         $this->assertContains("example", $results->entities[0]->alias);
         $this->assertContains("article", $results->entities[0]->alias);
     }
-
-    public function testCreateExistsAlias()
-    {
-        $user = factory(App\User::class)->make();
-        Auth::login($user);
-        $category = factory(Category::class)->create();
-        $article = factory(Article::class)->create();
-
-        $res = $this->call('POST', '/articles', [
-            'title'       => 'Example article',
-            'alias'       => $article->alias,
-            'category_id' => $category->id
-        ]);
-        $this->assertEquals(400, $res->getStatusCode());
-        $results = json_decode($res->getContent());
-        $this->assertEquals('error', $results->status);
-        $this->assertEquals('validation', $results->type);
-        $this->assertObjectHasAttribute('alias', $results->errors);
-        $this->assertInternalType('array', $results->errors->alias);
-        $this->assertEquals('The alias has already been taken.', $results->errors->alias[0]);
-    }
 }
