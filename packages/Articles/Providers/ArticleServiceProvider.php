@@ -27,11 +27,6 @@ class ArticleServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/phpsoft.article.php' => config_path('phpsoft.article.php'),
         ]);
-
-        // Publish migration files
-        $this->publishes([
-            __DIR__.'/../Commands/migrations' => base_path('database/migrations'),
-        ]);
     }
 
     /**
