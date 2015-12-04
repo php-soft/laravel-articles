@@ -31,7 +31,7 @@ class ArticleServiceProvider extends ServiceProvider
         // Publish migration files
         $this->publishes([
             __DIR__.'/../Commands/migrations' => base_path('database/migrations'),
-        ]);
+        ], 'migrations');
     }
 
     /**
