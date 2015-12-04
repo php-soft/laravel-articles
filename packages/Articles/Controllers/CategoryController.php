@@ -204,4 +204,51 @@ class CategoryController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index(Request $request)
+    {
+        $isTrash = $request->is('categories/trash');
+        $categoryModel = $this->categoryModel;
+
+        $categories = $categoryModel::browse([
+            'order'     => [ Input::get('sort', 'id') => Input::get('direction', 'desc') ],
+            'limit'     => ($limit = (int)Input::get('limit', 25)),
+            'offset'    => (Input::get('page', 1) - 1) * $limit,
+            'cursor'    => Input::get('cursor'),
+            'filters'   => $request->all(),
+            'trash'     => $isTrash
+        ]);
+
+        return response()->json(arrayView('phpsoft.articles::category/browse', [
+            'categories' => $categories,
+        ]), 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        $categoryModel = $this->categoryModel;
+
+        // retrieve category
+        $category = $categoryModel::withTrashed()->where('id', $id)->first();
+
+        // check exists
+        if (empty($category)) {
+            return response()->json(null, 404);
+        }
+
+        $category->forceDelete();
+
+        return response()->json(null, 204);
+    }
 }
