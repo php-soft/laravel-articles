@@ -18,6 +18,7 @@ namespace {
 
                 $table->increments('id');
                 $table->unsignedInteger('user_id');
+                $table->unsignedInteger('category_id');
                 $table->text('title');
                 $table->text('content');
                 $table->string('alias')->nullable();

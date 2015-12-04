@@ -29,6 +29,7 @@ class ArticleController extends Controller
         $validator = Validator::make($request->all(), [
             'title'       => 'required',
             'content'     => 'required',
+            'category_id' => 'required|numeric|exists:article_categories,id',
             'alias'       => 'regex:/^[a-z0-9\-]+/|unique:articles',
             'image'       => 'string',
             'description' => 'string',

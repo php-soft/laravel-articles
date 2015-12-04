@@ -23,6 +23,7 @@ class ArticleControllerTest extends TestCase
         $this->assertObjectHasAttribute('title', $results->errors);
         $this->assertEquals('The title field is required.', $results->errors->title[0]);
         $this->assertEquals('The content field is required.', $results->errors->content[0]);
+        $this->assertEquals('The category id field is required.', $results->errors->category_id[0]);
         $this->assertEquals('The title field is required.', $results->message);
     }
 
@@ -31,11 +32,12 @@ class ArticleControllerTest extends TestCase
         $user = factory(App\User::class)->make();
         Auth::login($user);
         $res = $this->call('POST', '/articles', [
-            'alias'   => 'This is invalid alias',
-            'order'   => 'invalid',
-            'status'  => 'invalid',
-            'title'   => 'title',
-            'content' => 'example content'
+            'alias'       => 'This is invalid alias',
+            'order'       => 'invalid',
+            'status'      => 'invalid',
+            'title'       => 'title',
+            'content'     => 'example content',
+            'category_id' => 'id category'
         ]);
         $this->assertEquals(400, $res->getStatusCode());
         $results = json_decode($res->getContent());
@@ -50,11 +52,14 @@ class ArticleControllerTest extends TestCase
 
     public function testCreateSuccess()
     {
+        $category = factory(Category::class)->create();
+
         $user = factory(App\User::class)->create();
         Auth::login($user);
         $res = $this->call('POST', '/articles', [
-            'title'   => 'Example Article',
-            'content' => 'content',
+            'title'       => 'Example Article',
+            'content'     => 'content',
+            'category_id' => $category->id
         ]);
 
         $this->assertEquals(201, $res->getStatusCode());
