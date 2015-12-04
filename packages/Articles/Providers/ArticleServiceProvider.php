@@ -22,6 +22,11 @@ class ArticleServiceProvider extends ServiceProvider
 
         // Register commands
         $this->commands('phpsoft.articles.command.migration');
+
+        // Publish config files
+        $this->publishes([
+            __DIR__.'/../config/phpsoft.article.php' => config_path('phpsoft.article.php'),
+        ]);
     }
 
     /**

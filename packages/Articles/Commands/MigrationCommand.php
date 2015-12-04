@@ -14,7 +14,7 @@ class MigrationCommand extends Command
      *
      * @var string
      */
-    protected $name = 'ps-article:migrate';
+    protected $name = 'ps-articles:migrate';
 
     /**
      * The console command description.
