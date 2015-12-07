@@ -112,4 +112,61 @@ class Article extends Model
     {
         return Article::STATUS_ENABLE == ($this->status & Article::STATUS_ENABLE);
     }
+
+    /**
+     * Browse items
+     *
+     * @param  array  $options
+     * @return array
+     */
+    public static function browse($options = [])
+    {
+        $articleModel = config('phpsoft.article.articleModel');
+
+        $find = new $articleModel;
+        $fillable = $find->fillable;
+
+        if ($options['trash']) {
+            $find = $find->onlyTrashed();
+        }
+
+        if (!empty($options['filters'])) {
+            $inFilters = array_intersect($fillable, array_keys($options['filters']));
+
+            foreach ($inFilters as $key) {
+                $find = ($options['filters'][$key] == null) ? $find : $find->where($key, 'LIKE', $options['filters'][$key]);
+            }
+        }
+
+        if (!empty($options['order'])) {
+            foreach ($options['order'] as $field => $direction) {
+                if (in_array($field, $fillable)) {
+                    $find = $find->orderBy($field, $direction);
+                }
+            }
+
+            $find = $find->orderBy('id', 'DESC');
+        }
+
+        $total = $find->count();
+
+        if (!empty($options['offset'])) {
+            $find = $find->skip($options['offset']);
+        }
+
+        if (!empty($options['limit'])) {
+            $find = $find->take($options['limit']);
+        }
+
+        if (!empty($options['cursor'])) {
+            $find = $find->where('id', '<', $options['cursor']);
+        }
+
+        return [
+            'total'  => $total,
+            'offset' => empty($options['offset']) ? 0 : $options['offset'],
+            'limit'  => empty($options['limit']) ? 0 : $options['limit'],
+            'data'   => $find->get(),
+        ];
+    }
 }

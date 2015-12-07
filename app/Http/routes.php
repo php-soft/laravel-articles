@@ -38,4 +38,6 @@ Route::get('categories/trash', '\PhpSoft\Articles\Controllers\CategoryController
 Route::get('categories/{idOrAlias}', '\PhpSoft\Articles\Controllers\CategoryController@show');
 Route::get('categories', '\PhpSoft\Articles\Controllers\CategoryController@index');
 
+Route::get('articles/trash', '\PhpSoft\Articles\Controllers\ArticleController@index');
 Route::get('articles/{id}', '\PhpSoft\Articles\Controllers\ArticleController@show');
+Route::get('articles', '\PhpSoft\Articles\Controllers\ArticleController@index');
