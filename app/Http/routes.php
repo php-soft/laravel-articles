@@ -36,3 +36,5 @@ Route::group(['middleware'=>'auth'], function() { // use middleware jwt.auth if 
 Route::get('categories/trash', '\PhpSoft\Articles\Controllers\CategoryController@index');
 Route::get('categories/{idOrAlias}', '\PhpSoft\Articles\Controllers\CategoryController@show');
 Route::get('categories', '\PhpSoft\Articles\Controllers\CategoryController@index');
+
+Route::get('articles/{id}', '\PhpSoft\Articles\Controllers\ArticleController@show');
