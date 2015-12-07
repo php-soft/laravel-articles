@@ -27,8 +27,8 @@ Route::group(['middleware'=>'auth'], function() { // use middleware jwt.auth if 
 
     Route::post('articles', '\PhpSoft\Articles\Controllers\ArticleController@store');
     Route::patch('articles/{id}', '\PhpSoft\Articles\Controllers\ArticleController@update');
-
-
+    Route::post('articles/{id}/trash', '\PhpSoft\Articles\Controllers\ArticleController@moveToTrash');
+    Route::post('articles/{id}/restore', '\PhpSoft\Articles\Controllers\ArticleController@restoreFromTrash');
     Route::post('articles/{id}/enable', '\PhpSoft\Articles\Controllers\ArticleController@enable');
     Route::post('articles/{id}/disable', '\PhpSoft\Articles\Controllers\ArticleController@disable');
 });

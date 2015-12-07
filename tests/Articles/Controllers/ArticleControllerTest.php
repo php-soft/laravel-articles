@@ -243,6 +243,55 @@ class ArticleControllerTest extends TestCase
         $this->assertNotEquals($article->alias, $results->entities[0]->alias);
     }
 
+    public function testMoveToTrash()
+    {
+        // test don't login
+        $res = $this->call('POST', '/articles/1/trash');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        // test find not found
+        $res = $this->call('POST', '/articles/1/trash');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test set article is delete
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+        $res = $this->call('POST', '/articles/' . $article->id . '/trash');
+        $this->assertEquals('204', $res->getStatusCode());
+        $exists = Article::find($article->id);
+        $this->assertNull($exists);
+        $article = Article::onlyTrashed()->where('id', $article->id)->count();
+        $this->assertEquals(1, $article);
+    }
+
+    public function testRestoreFromTrash()
+    {
+        // test don't login
+        $res = $this->call('POST', '/articles/1/restore');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        // test find not found
+        $res = $this->call('POST', '/articles/1/restore');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test restore category
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+        $res = $this->call('POST', '/articles/' . $article->id . '/trash');
+        $res = $this->call('POST', '/articles/' . $article->id . '/restore');
+        $this->assertEquals('204', $res->getStatusCode());
+        $exists = Article::find($article->id);
+        $this->assertEquals($article->name, $exists->name);
+        $existsTrash = Article::onlyTrashed()->count();
+        $this->assertEquals(0, $existsTrash);
+    }
+
     public function testEnable()
     {
         // test don't login
