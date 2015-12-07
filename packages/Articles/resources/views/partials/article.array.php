@@ -19,3 +19,5 @@ $this->set('category', function ($section) use ($article) {
 
     $section->set($section->partial('phpsoft.articles::partials/category', [ 'category' => $article->category ]));
 });
+
+$this->set('isEnable', $article->isEnable());

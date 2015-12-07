@@ -134,4 +134,54 @@ class ArticleController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * enable article role
+     * @param  int  $id
+     * @return Response
+     */
+    public function enable($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if ($article->isEnable()) {
+            return response()->json(null, 204);
+        }
+
+        if (!$article->enable()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * disable article role
+     * @param  int  $id
+     * @return Response
+     */
+    public function disable($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if (!$article->isEnable()) {
+            return response()->json(null, 204);
+        }
+
+        if (!$article->disable()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
 }
