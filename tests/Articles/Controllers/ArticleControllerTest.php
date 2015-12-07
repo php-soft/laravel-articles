@@ -370,6 +370,45 @@ class ArticleControllerTest extends TestCase
         $this->assertTrue($results->entities[0]->isEnable);
     }
 
+    public function testDeleteNotAuthAndPermission()
+    {
+        $res = $this->call('DELETE', '/articles/0');
+        $this->assertEquals(401, $res->getStatusCode());
+    }
+
+    public function testDeleteNotFound()
+    {
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        $res = $this->call('DELETE', '/articles/0');
+        $this->assertEquals(404, $res->getStatusCode());
+    }
+
+    public function testDeleteSuccess()
+    {
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        $res = $this->call('DELETE', "/articles/{$article->id}");
+        $this->assertEquals(204, $res->getStatusCode());
+
+        $exists = Article::withTrashed()->where('id', $article->id)->first();
+        $this->assertNull($exists);
+
+        // test delete from trash
+        $article = factory(Article::class)->create();
+        $res = $this->call('POST', '/articles/' . $article->id . '/trash');
+        $this->assertEquals(204, $res->getStatusCode());
+        $res = $this->call('DELETE', "/articles/{$article->id}");
+        $this->assertEquals(204, $res->getStatusCode());
+        $exists = Article::withTrashed()->where('id', $article->id)->first();
+        $this->assertNull($exists);
+    }
+
     public function testBrowseNotFound()
     {
         $res = $this->call('GET', '/articles');
