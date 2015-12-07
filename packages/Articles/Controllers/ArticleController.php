@@ -125,7 +125,7 @@ class ArticleController extends Controller
         $articleModel = $this->articleModel;
         $article = $articleModel::find($id);
 
-        if (empty($category)) {
+        if (!$article) {
             return response()->json(null, 404);
         }
 
