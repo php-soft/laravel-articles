@@ -92,4 +92,46 @@ class ArticleController extends Controller
             'article' => $article
         ]), 200);
     }
+
+    /**
+     * move article to trash
+     * @param  int $id
+     * @return Response
+     */
+    public function moveToTrash($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if (!$article->delete()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * restore article
+     * @param  int $id
+     * @return Response
+     */
+    public function restoreFromTrash($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::onlyTrashed()->where('id', $id)->first();
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if (!$article->restore()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
 }
