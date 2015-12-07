@@ -292,6 +292,84 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(0, $existsTrash);
     }
 
+    public function testEnable()
+    {
+        // test don't login
+        $res = $this->call('POST', '/articles/0/enable');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        // test find not found
+        $res = $this->call('POST', '/articles/1/enable');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test article type has enable
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+        $res = $this->call('POST', '/articles/' . $article->id . '/enable');
+        $this->assertEquals('204', $res->getStatusCode());
+
+        // test set enable
+        $article->disable();
+        $res = $this->call('POST', '/articles/' . $article->id . '/enable');
+        $this->assertEquals('204', $res->getStatusCode());
+        $article = Article::find($article->id);
+        $this->assertEquals(true, $article->isEnable());
+    }
+
+    public function testDisable()
+    {
+        $res = $this->call('POST', '/articles/0/disable');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+        // test find not found
+        $res = $this->call('POST', '/articles/1/disable');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test set disable
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+        $res = $this->call('POST', '/articles/' . $article->id . '/disable');
+        $this->assertEquals('204', $res->getStatusCode());
+        $article = Article::find($article->id);
+        $this->assertEquals(false, $article->isEnable());
+
+        // test article type has disable
+        $res = $this->call('POST', '/articles/' . $article->id . '/disable');
+        $this->assertEquals('204', $res->getStatusCode());
+    }
+
+    public function testReadNotFound()
+    {
+        $res = $this->call('GET', '/articles/0');
+
+        $this->assertEquals(404, $res->getStatusCode());
+    }
+
+    public function testReadFound()
+    {
+        // test read found with id
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+
+        $res = $this->call('GET', '/articles/' . $article->id);
+
+        $this->assertEquals(200, $res->getStatusCode());
+
+        $results = json_decode($res->getContent());
+        $this->assertObjectHasAttribute('entities', $results);
+        $this->assertInternalType('array', $results->entities);
+        $this->assertEquals($article->title, $results->entities[0]->title);
+        $this->assertEquals($article->alias, $results->entities[0]->alias);
+        $this->assertEquals($article->description, $results->entities[0]->description);
+        $this->assertEquals($article->image, $results->entities[0]->image);
+        $this->assertTrue($results->entities[0]->isEnable);
+    }
+
     public function testDeleteNotAuthAndPermission()
     {
         $res = $this->call('DELETE', '/articles/0');

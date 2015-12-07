@@ -115,6 +115,26 @@ class ArticleController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        return response()->json(arrayView('phpsoft.articles::article/read', [
+            'article' => $article
+        ]), 200);
+    }
+
+    /**
      * restore article
      * @param  int $id
      * @return Response
@@ -136,6 +156,56 @@ class ArticleController extends Controller
     }
 
     /**
+     * enable article role
+     * @param  int  $id
+     * @return Response
+     */
+    public function enable($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if ($article->isEnable()) {
+            return response()->json(null, 204);
+        }
+
+        if (!$article->enable()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * disable article role
+     * @param  int  $id
+     * @return Response
+     */
+    public function disable($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if (!$article->isEnable()) {
+            return response()->json(null, 204);
+        }
+
+        if (!$article->disable()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -149,7 +219,7 @@ class ArticleController extends Controller
         $article = $articleModel::withTrashed()->where('id', $id)->first();
 
         // check exists
-        if (empty($article)) {
+        if (!$article) {
             return response()->json(null, 404);
         }
 
