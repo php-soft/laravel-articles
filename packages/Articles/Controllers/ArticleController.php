@@ -92,4 +92,24 @@ class ArticleController extends Controller
             'article' => $article
         ]), 200);
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (empty($category)) {
+            return response()->json(null, 404);
+        }
+
+        return response()->json(arrayView('phpsoft.articles::article/read', [
+            'article' => $article
+        ]), 200);
+    }
 }

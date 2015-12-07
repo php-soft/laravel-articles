@@ -243,4 +243,30 @@ class ArticleControllerTest extends TestCase
         $this->assertNotEquals($article->alias, $results->entities[0]->alias);
     }
 
+    public function testReadNotFound()
+    {
+        $res = $this->call('GET', '/articles/0');
+
+        $this->assertEquals(404, $res->getStatusCode());
+    }
+
+    public function testReadFound()
+    {
+        // test read found with id
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+
+        $res = $this->call('GET', '/articles/' . $category->id);
+
+        $this->assertEquals(200, $res->getStatusCode());
+
+        $results = json_decode($res->getContent());
+        $this->assertObjectHasAttribute('entities', $results);
+        $this->assertInternalType('array', $results->entities);
+        $this->assertEquals($article->title, $results->entities[0]->title);
+        $this->assertEquals($article->alias, $results->entities[0]->alias);
+        $this->assertEquals($article->description, $results->entities[0]->description);
+        $this->assertEquals($article->image, $results->entities[0]->image);
+        $this->assertTrue($results->entities[0]->isEnable);
+    }
 }
