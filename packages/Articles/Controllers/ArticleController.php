@@ -94,6 +94,27 @@ class ArticleController extends Controller
     }
 
     /**
+     * move article to trash
+     * @param  int $id
+     * @return Response
+     */
+    public function moveToTrash($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if (!$article->delete()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -111,5 +132,76 @@ class ArticleController extends Controller
         return response()->json(arrayView('phpsoft.articles::article/read', [
             'article' => $article
         ]), 200);
+    }
+
+    /**
+     * restore article
+     * @param  int $id
+     * @return Response
+     */
+    public function restoreFromTrash($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::onlyTrashed()->where('id', $id)->first();
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if (!$article->restore()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * enable article role
+     * @param  int  $id
+     * @return Response
+     */
+    public function enable($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if ($article->isEnable()) {
+            return response()->json(null, 204);
+        }
+
+        if (!$article->enable()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * disable article role
+     * @param  int  $id
+     * @return Response
+     */
+    public function disable($id)
+    {
+        $articleModel = $this->articleModel;
+        $article = $articleModel::find($id);
+
+        if (!$article) {
+            return response()->json(null, 404);
+        }
+
+        if (!$article->isEnable()) {
+            return response()->json(null, 204);
+        }
+
+        if (!$article->disable()) {
+            return response()->json(null, 500); // @codeCoverageIgnore
+        }
+
+        return response()->json(null, 204);
     }
 }

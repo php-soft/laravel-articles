@@ -83,4 +83,33 @@ class Article extends Model
 
         return $this;
     }
+
+    /**
+     * set status enable
+     * @return boolean
+     */
+    public function enable()
+    {
+        $this->status = $this->status | Article::STATUS_ENABLE;
+        return $this->save();
+    }
+
+    /**
+     * set status disable
+     * @return boolean
+     */
+    public function disable()
+    {
+        $this->status = $this->status & ~Article::STATUS_ENABLE;
+        return $this->save();
+    }
+
+    /**
+     * check status enable
+     * @return boolean [description]
+     */
+    public function isEnable()
+    {
+        return Article::STATUS_ENABLE == ($this->status & Article::STATUS_ENABLE);
+    }
 }
