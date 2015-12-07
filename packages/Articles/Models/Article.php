@@ -57,4 +57,30 @@ class Article extends Model
 
         return parent::create($attributes)->fresh();
     }
+
+    /**
+     * Update the model in the database.
+     *
+     * @param  array  $attributes
+     * @return bool|int
+     */
+    public function update(array $attributes = [])
+    {
+        if (isset($attributes['alias']) && empty($attributes['alias'])) {
+            $title = $this->title;
+
+            if (isset($attributes['title'])) {
+                $title = $attributes['title'];
+            }
+
+            $attributes['alias'] = Str::slug($title)
+                .'-'.Uuid::generate(4);
+        }
+
+        if (!parent::update($attributes)) {
+            throw new Exception('Cannot update article.');
+        }
+
+        return $this;
+    }
 }
