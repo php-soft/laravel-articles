@@ -31,6 +31,7 @@ Route::group(['middleware'=>'auth'], function() { // use middleware jwt.auth if 
     Route::post('articles/{id}/restore', '\PhpSoft\Articles\Controllers\ArticleController@restoreFromTrash');
     Route::post('articles/{id}/enable', '\PhpSoft\Articles\Controllers\ArticleController@enable');
     Route::post('articles/{id}/disable', '\PhpSoft\Articles\Controllers\ArticleController@disable');
+    Route::delete('articles/{id}', '\PhpSoft\Articles\Controllers\ArticleController@destroy');
 });
 
 Route::get('categories/trash', '\PhpSoft\Articles\Controllers\CategoryController@index');
