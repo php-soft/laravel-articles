@@ -652,7 +652,7 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals(count($categories), count($results->entities));
         for ($i = 0; $i < 10; ++$i) {
             $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
-            $this->assertObjectHasAttribute('deleteAt', $results->entities[$i]);
+            $this->assertObjectHasAttribute('deletedAt', $results->entities[$i]);
         }
     }
 
