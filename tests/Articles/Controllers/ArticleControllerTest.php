@@ -356,7 +356,7 @@ class ArticleControllerTest extends TestCase
         $category = factory(Category::class)->create();
         $article = factory(Article::class)->create();
 
-        $res = $this->call('GET', '/articles/' . $category->id);
+        $res = $this->call('GET', '/articles/' . $article->id);
 
         $this->assertEquals(200, $res->getStatusCode());
 
