@@ -134,4 +134,27 @@ class ArticleController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        $articleModel = $this->articleModel;
+
+        // retrieve article
+        $article = $articleModel::withTrashed()->where('id', $id)->first();
+
+        // check exists
+        if (empty($article)) {
+            return response()->json(null, 404);
+        }
+
+        $article->forceDelete();
+
+        return response()->json(null, 204);
+    }
 }
