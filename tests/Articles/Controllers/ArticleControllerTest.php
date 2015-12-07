@@ -429,6 +429,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(count($articles), count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
             $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
         }
@@ -457,6 +458,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(5, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 5; ++$i) {
             $this->assertEquals($articles[4 - $i]->id, $results->entities[$i]->id);
         }
@@ -467,6 +469,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(0, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
     }
 
     public function testBrowseWithPagination()
@@ -482,6 +485,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(5, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 5; ++$i) {
             $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
         }
@@ -491,6 +495,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(5, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 5; ++$i) {
             $this->assertEquals($articles[4 - $i]->id, $results->entities[$i]->id);
         }
@@ -500,6 +505,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(0, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
     }
 
     public function testBrowseWithSort()
@@ -516,6 +522,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
             $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
         }
@@ -524,6 +531,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
             $this->assertEquals($articles[$i]->id, $results->entities[$i]->id);
         }
@@ -532,6 +540,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
             $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
         }
@@ -594,6 +603,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(count($articles), count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
             $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
             $this->assertObjectHasAttribute('deletedAt', $results->entities[$i]);
@@ -621,6 +631,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(5, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 5; ++$i) {
             $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
         }
@@ -631,6 +642,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(5, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 5; ++$i) {
             $this->assertEquals($articles[4 - $i]->id, $results->entities[$i]->id);
         }
@@ -641,6 +653,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(0, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
     }
 
     public function testBrowseDraftWithPagination()
@@ -664,6 +677,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(5, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 5; ++$i) {
             $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
         }
@@ -673,6 +687,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(5, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 5; ++$i) {
             $this->assertEquals($articles[4 - $i]->id, $results->entities[$i]->id);
         }
@@ -682,6 +697,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(0, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
     }
 
     public function testBrowseDraftWithSort()
@@ -706,6 +722,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
             $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
         }
@@ -714,6 +731,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
             $this->assertEquals($articles[$i]->id, $results->entities[$i]->id);
         }
@@ -722,6 +740,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
+        $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
             $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
         }
