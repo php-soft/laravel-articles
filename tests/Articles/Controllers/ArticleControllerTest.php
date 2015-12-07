@@ -243,4 +243,54 @@ class ArticleControllerTest extends TestCase
         $this->assertNotEquals($article->alias, $results->entities[0]->alias);
     }
 
+    public function testEnable()
+    {
+        // test don't login
+        $res = $this->call('POST', '/articles/0/enable');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        // test find not found
+        $res = $this->call('POST', '/articles/1/enable');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test article type has enable
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+        $res = $this->call('POST', '/articles/' . $article->id . '/enable');
+        $this->assertEquals('204', $res->getStatusCode());
+
+        // test set enable
+        $article->disable();
+        $res = $this->call('POST', '/articles/' . $article->id . '/enable');
+        $this->assertEquals('204', $res->getStatusCode());
+        $article = Article::find($article->id);
+        $this->assertEquals(true, $article->isEnable());
+    }
+
+    public function testDisable()
+    {
+        $res = $this->call('POST', '/articles/0/disable');
+        $this->assertEquals(401, $res->getStatusCode());
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+        // test find not found
+        $res = $this->call('POST', '/articles/1/disable');
+        $this->assertEquals('404', $res->getStatusCode());
+
+        // test set disable
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+        $res = $this->call('POST', '/articles/' . $article->id . '/disable');
+        $this->assertEquals('204', $res->getStatusCode());
+        $article = Article::find($article->id);
+        $this->assertEquals(false, $article->isEnable());
+
+        // test article type has disable
+        $res = $this->call('POST', '/articles/' . $article->id . '/disable');
+        $this->assertEquals('204', $res->getStatusCode());
+    }
 }
