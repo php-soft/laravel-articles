@@ -10,7 +10,13 @@ $this->extract($category, [
     'status',
 ]);
 
-$this->set('parent', ['id' => $category->parent_id]);
+$this->set('parent', function ($section) use ($category) {
+
+    $parent = $category->parent;
+    $section->set(($parent == null) ? null : $section->partial(
+        'phpsoft.articles::partials/category', [ 'category' => $parent ]
+    ));
+});
 
 $this->set('createdAt', date('c', strtotime($category->created_at)));
 
