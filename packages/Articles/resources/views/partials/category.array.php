@@ -12,9 +12,9 @@ $this->extract($category, [
 
 $this->set('parent', function ($section) use ($category) {
 
-    $category = PhpSoft\Articles\Models\Category::find($category->parent_id);
-    $section->set(($category == null) ? null : $section->partial(
-        'phpsoft.articles::partials/category', [ 'category' => $category ]
+    $parent = $category->parent;
+    $section->set(($parent == null) ? null : $section->partial(
+        'phpsoft.articles::partials/category', [ 'category' => $parent ]
     ));
 });
 
