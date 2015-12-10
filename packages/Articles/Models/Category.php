@@ -31,16 +31,6 @@ class Category extends Model
     protected $fillable = ['name', 'alias', 'image', 'description', 'parent_id', 'order', 'status'];
 
     /**
-     * Make relationship to category.
-     *
-     * @return relationship
-     */
-    public function parent()
-    {
-        return $this->belongsTo('PhpSoft\Articles\Models\Category', 'parent_id'); // @codeCoverageIgnore
-    }
-
-    /**
      * Create the model in the database.
      *
      * @param  array  $attributes
