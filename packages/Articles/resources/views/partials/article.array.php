@@ -11,7 +11,7 @@ $this->extract($article, [
     'status',
 ]);
 
-$this->set('user', $article->user);
+$this->set('user', ['id' => $article->user_id]);
 
 $this->set('createdAt', date('c', strtotime($article->created_at)));
 
