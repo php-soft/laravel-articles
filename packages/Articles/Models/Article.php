@@ -41,6 +41,15 @@ class Article extends Model
     }
 
     /**
+     * relation to table users
+     * @return relation
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'user_id'); // @codeCoverageIgnore
+    }
+
+    /**
      * Create the model in the database.
      *
      * @param  array  $attributes
