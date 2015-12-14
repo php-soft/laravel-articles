@@ -140,6 +140,23 @@ class CategoryControllerTest extends TestCase
         $this->assertEquals('The status must be a number.', $results->errors->status[0]);
     }
 
+    public function testUpdateWrongParent()
+    {
+        $category = factory(Category::class)->create();
+        $category2 = factory(Category::class)->create(['parent_id' => $category->id]);
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        $res = $this->call('PATCH', '/categories/' . $category->id, [
+            'parent_id' => $category2->id,
+        ]);
+
+        $this->assertEquals(400, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals('The selected parent id is invalid.', $results->errors->parent_id[0]);
+    }
+
     public function testUpdateWithEmptyName()
     {
         $category = factory(Category::class)->create();

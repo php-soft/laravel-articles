@@ -19,6 +19,29 @@ class CategoryController extends Controller
     }
 
     /**
+     * Validate function
+     */
+    public function registerValidators()
+    {
+        Validator::extend('selectParent', function ($attribute, $value, $parameters,  $validator) {
+
+            $input = $validator->getData();
+            $id = $parameters[0];
+
+            $categoryModel = $this->categoryModel;
+            $parent = $categoryModel::find($input['parent_id']);
+
+            if (!$parent) {
+                return false;
+            }
+
+            return $parent->parent_id != $id;
+
+
+        }, 'The selected parent id is invalid.');
+    }
+
+    /**
      * Create resource action
      *
      * @param  Request $request
@@ -59,6 +82,9 @@ class CategoryController extends Controller
      */
     public function update($id, Request $request)
     {
+        // validate
+        $this->registerValidators();
+
         $categoryModel = $this->categoryModel;
         $category = $categoryModel::find($id);
 
@@ -73,7 +99,7 @@ class CategoryController extends Controller
             'alias'       => 'regex:/^[a-z0-9\-]+/|unique:article_categories,alias,' . $category->id,
             'image'       => 'string',
             'description' => 'string',
-            'parent_id'   => 'numeric|not_in:' . $id . ($request->parent_id == 0 || $request->parent_id == null ? '' : '|exists:article_categories,id'),
+            'parent_id'   => 'numeric|not_in:' . $id . ($request->parent_id == 0 || $request->parent_id == null ? '' : '|exists:article_categories,id|selectParent:' . $id),
             'order'       => 'numeric',
             'status'      => 'numeric',
         ]);
