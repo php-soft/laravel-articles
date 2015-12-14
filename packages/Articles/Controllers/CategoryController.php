@@ -32,7 +32,7 @@ class CategoryController extends Controller
             $parent = $categoryModel::find($input['parent_id']);
 
             if (!$parent) {
-                return true;
+                return false;
             }
 
             return $parent->parent_id != $id;
