@@ -30,7 +30,7 @@ class ArticleController extends Controller
             'title'       => 'required',
             'content'     => 'required',
             'category_id' => 'required|numeric|exists:article_categories,id',
-            'alias'       => 'regex:/^[a-z0-9\-]+/',
+            'alias'       => 'regex:/^[a-z0-9\-]+/|unique:articles',
             'image'       => 'string',
             'description' => 'string',
             'order'       => 'numeric'
@@ -72,7 +72,7 @@ class ArticleController extends Controller
             'title'       => 'sometimes|required',
             'content'     => 'sometimes|required',
             'category_id' => 'sometimes|required|numeric|exists:article_categories,id',
-            'alias'       => 'regex:/^[a-z0-9\-]+/',
+            'alias'       => 'regex:/^[a-z0-9\-]+/|unique:articles,alias,' . $article->id,
             'image'       => 'string',
             'description' => 'string',
             'order'       => 'numeric'
@@ -117,13 +117,13 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $idOrAlias
      * @return Response
      */
-    public function show($id)
+    public function show($idOrAlias)
     {
         $articleModel = $this->articleModel;
-        $article = $articleModel::find($id);
+        $article = $articleModel::findByIdOrAlias($idOrAlias);
 
         if (!$article) {
             return response()->json(null, 404);

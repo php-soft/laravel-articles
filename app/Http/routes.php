@@ -39,5 +39,5 @@ Route::get('categories/{idOrAlias}', '\PhpSoft\Articles\Controllers\CategoryCont
 Route::get('categories', '\PhpSoft\Articles\Controllers\CategoryController@index');
 
 Route::get('articles/trash', '\PhpSoft\Articles\Controllers\ArticleController@index');
-Route::get('articles/{id}', '\PhpSoft\Articles\Controllers\ArticleController@show');
+Route::get('articles/{idOrAlias}', '\PhpSoft\Articles\Controllers\ArticleController@show');
 Route::get('articles', '\PhpSoft\Articles\Controllers\ArticleController@index');

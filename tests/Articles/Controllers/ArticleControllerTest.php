@@ -73,6 +73,28 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals('The selected category id is invalid.', $results->message);
     }
 
+    public function testCreateUniqueAlias()
+    {
+        $user = factory(App\User::class)->create();
+        Auth::login($user);
+        $article = factory(Article::class)->create(['alias' => 'new-post']);
+
+
+        $res = $this->call('POST', '/articles', [
+            'title'       => 'Example Article',
+            'content'     => 'content',
+            'category_id' => 1,
+            'alias'       => 'new-post'
+        ]);
+
+        $this->assertEquals(400, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals('error', $results->status);
+        $this->assertEquals('validation', $results->type);
+        $this->assertObjectHasAttribute('alias', $results->errors);
+        $this->assertEquals('The alias has already been taken.', $results->errors->alias[0]);
+    }
+
     public function testCreateSuccess()
     {
         $category = factory(Category::class)->create();
@@ -243,6 +265,26 @@ class ArticleControllerTest extends TestCase
         $this->assertNotEquals($article->alias, $results->entities[0]->alias);
     }
 
+    public function testUpdateUniqueAlias()
+    {
+        $user = factory(App\User::class)->create();
+        Auth::login($user);
+        $article = factory(Article::class)->create(['alias' => 'new-post']);
+        $category = factory(Category::class)->create();
+        $newArticle = factory(Article::class)->create();
+
+        $res = $this->call('PATCH', '/articles/' . $newArticle->id, [
+            'alias' => 'new-post',
+        ]);
+
+        $this->assertEquals(400, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals('error', $results->status);
+        $this->assertEquals('validation', $results->type);
+        $this->assertObjectHasAttribute('alias', $results->errors);
+        $this->assertEquals('The alias has already been taken.', $results->errors->alias[0]);
+    }
+
     public function testMoveToTrash()
     {
         // test don't login
@@ -354,9 +396,23 @@ class ArticleControllerTest extends TestCase
     {
         // test read found with id
         $category = factory(Category::class)->create();
-        $article = factory(Article::class)->create();
+        $article = factory(Article::class)->create(['alias' => 'new-post']);
 
         $res = $this->call('GET', '/articles/' . $article->id);
+
+        $this->assertEquals(200, $res->getStatusCode());
+
+        $results = json_decode($res->getContent());
+        $this->assertObjectHasAttribute('entities', $results);
+        $this->assertInternalType('array', $results->entities);
+        $this->assertEquals($article->title, $results->entities[0]->title);
+        $this->assertEquals($article->alias, $results->entities[0]->alias);
+        $this->assertEquals($article->description, $results->entities[0]->description);
+        $this->assertEquals($article->image, $results->entities[0]->image);
+        $this->assertTrue($results->entities[0]->isEnable);
+
+        // test find by alias
+        $res = $this->call('GET', '/articles/' . $article->alias);
 
         $this->assertEquals(200, $res->getStatusCode());
 
