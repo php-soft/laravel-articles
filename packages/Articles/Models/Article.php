@@ -27,7 +27,7 @@ class Article extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'category_id', 'title', 'content', 'alias', 'image', 'description', 'order'];
+    protected $fillable = ['user_id', 'category_id', 'title', 'content', 'alias', 'image', 'description', 'order', 'status'];
 
     /**
      * Make relationship to category.

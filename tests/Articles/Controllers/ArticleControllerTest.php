@@ -38,7 +38,8 @@ class ArticleControllerTest extends TestCase
             'status'      => 'invalid',
             'title'       => 'title',
             'content'     => 'example content',
-            'category_id' => 'id category'
+            'category_id' => 'id category',
+            'status'      => 'status'
         ]);
         $this->assertEquals(400, $res->getStatusCode());
         $results = json_decode($res->getContent());
@@ -49,6 +50,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals('The alias format is invalid.', $results->errors->alias[0]);
         $this->assertInternalType('array', $results->errors->order);
         $this->assertEquals('The order must be a number.', $results->errors->order[0]);
+        $this->assertEquals('The status must be an integer.', $results->errors->status[0]);
     }
 
     public function testCreateDoesExitsCategory()
@@ -120,7 +122,8 @@ class ArticleControllerTest extends TestCase
             'status'      => 'invalid',
             'title'       => 'title',
             'content'     => 'example content',
-            'category_id' => 'id category'
+            'category_id' => 'id category',
+            'status'      => 'status'
         ]);
         $this->assertEquals(400, $res->getStatusCode());
         $results = json_decode($res->getContent());
@@ -131,6 +134,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals('The alias format is invalid.', $results->errors->alias[0]);
         $this->assertInternalType('array', $results->errors->order);
         $this->assertEquals('The order must be a number.', $results->errors->order[0]);
+        $this->assertEquals('The status must be an integer.', $results->errors->status[0]);
     }
 
     public function testUpdateDoesExitsCategory()
@@ -573,6 +577,20 @@ class ArticleControllerTest extends TestCase
         $results = json_decode($res->getContent());
         $this->assertEquals(10, $results->meta->total);
         $this->assertEquals(10, count($results->entities));
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        for ($i=1; $i <=5 ; $i++) {
+            $res = $this->call('POST', '/articles/' . $i . '/disable');
+            $this->assertEquals('204', $res->getStatusCode());
+        }
+
+        $res = $this->call('GET', '/articles?status=1');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, $results->meta->total);
+        $this->assertEquals(5, count($results->entities));
     }
 
     public function testBrowseDraftNotFound()
