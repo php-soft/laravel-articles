@@ -573,6 +573,20 @@ class ArticleControllerTest extends TestCase
         $results = json_decode($res->getContent());
         $this->assertEquals(10, $results->meta->total);
         $this->assertEquals(10, count($results->entities));
+
+        $user = factory(App\User::class)->make();
+        Auth::login($user);
+
+        for ($i=1; $i <=5 ; $i++) {
+            $res = $this->call('POST', '/articles/' . $i . '/disable');
+            $this->assertEquals('204', $res->getStatusCode());
+        }
+
+        $res = $this->call('GET', '/articles?status=1');
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals(5, $results->meta->total);
+        $this->assertEquals(5, count($results->entities));
     }
 
     public function testBrowseDraftNotFound()
