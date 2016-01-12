@@ -242,7 +242,7 @@ class CategoryController extends Controller
         $categoryModel = $this->categoryModel;
 
         $categories = $categoryModel::browse([
-            'order'     => [ Input::get('sort', 'id') => Input::get('direction', 'desc') ],
+            'order'     => [ Input::get('sort', 'order') => Input::get('direction', 'asc') ],
             'limit'     => ($limit = (int)Input::get('limit', 25)),
             'offset'    => (Input::get('page', 1) - 1) * $limit,
             'cursor'    => Input::get('cursor'),
