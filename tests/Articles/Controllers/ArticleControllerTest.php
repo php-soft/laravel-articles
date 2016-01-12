@@ -519,8 +519,12 @@ class ArticleControllerTest extends TestCase
         for ($i = 0; $i < 10; ++$i) {
             $articles[] = factory(Article::class)->create([
                 'title' => 9 - $i,
+                'order' => rand(10, 10000),
             ]);
         }
+
+        $ArticleTitle = Article::select('*')->orderBy('title', 'asc')->orderBy('id', 'desc')->get();
+        $ArticleOrder = Article::select('*')->orderBy('order', 'asc')->orderBy('id', 'desc')->get();
 
         $res = $this->call('GET', '/articles');
         $this->assertEquals(200, $res->getStatusCode());
@@ -528,7 +532,7 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(10, count($results->entities));
         $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
-            $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
+            $this->assertEquals($ArticleOrder[$i]->id, $results->entities[$i]->id);
         }
 
         $res = $this->call('GET', '/articles?sort=title');
@@ -537,16 +541,16 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(10, count($results->entities));
         $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
-            $this->assertEquals($articles[$i]->id, $results->entities[$i]->id);
+            $this->assertEquals($ArticleTitle[$i]->id, $results->entities[$i]->id);
         }
 
-        $res = $this->call('GET', '/articles?sort=title&direction=asc');
+        $res = $this->call('GET', '/articles?sort=title&direction=desc');
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
         $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
-            $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
+            $this->assertEquals($ArticleTitle[9 - $i]->id, $results->entities[$i]->id);
         }
     }
 
@@ -736,13 +740,16 @@ class ArticleControllerTest extends TestCase
             $this->assertEquals(204, $res->getStatusCode());
         }
 
+        $ArticleTitle = Article::onlyTrashed()->orderBy('title', 'asc')->orderBy('id', 'desc')->get();
+        $ArticleOrder = Article::onlyTrashed()->orderBy('order', 'asc')->orderBy('id', 'desc')->get();
+
         $res = $this->call('GET', '/articles/trash');
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
         $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
-            $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
+            $this->assertEquals($ArticleOrder[$i]->id, $results->entities[$i]->id);
         }
 
         $res = $this->call('GET', '/articles/trash?sort=title');
@@ -751,16 +758,16 @@ class ArticleControllerTest extends TestCase
         $this->assertEquals(10, count($results->entities));
         $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
-            $this->assertEquals($articles[$i]->id, $results->entities[$i]->id);
+            $this->assertEquals($ArticleTitle[$i]->id, $results->entities[$i]->id);
         }
 
-        $res = $this->call('GET', '/articles/trash?sort=title&direction=asc');
+        $res = $this->call('GET', '/articles/trash?sort=title&direction=desc');
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
         $this->assertEquals(10, $results->meta->total);
         for ($i = 0; $i < 10; ++$i) {
-            $this->assertEquals($articles[9 - $i]->id, $results->entities[$i]->id);
+            $this->assertEquals($ArticleTitle[9 - $i]->id, $results->entities[$i]->id);
         }
     }
 

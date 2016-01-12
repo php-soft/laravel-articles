@@ -583,19 +583,22 @@ class CategoryControllerTest extends TestCase
         $categories = [];
         for ($i = 0; $i < 10; ++$i) {
             $categories[] = factory(Category::class)->create([
-                'name' => 9 - $i,
+                'name'  => 9 - $i,
+                'order' => rand(10, 10000),
             ]);
         }
+
+        $CategoryOrder = Category::select('*')->orderBy('order', 'asc')->orderBy('id', 'desc')->get();
 
         $res = $this->call('GET', '/categories');
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
         for ($i = 0; $i < 10; ++$i) {
-            $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
+            $this->assertEquals($CategoryOrder[$i]->id, $results->entities[$i]->id);
         }
 
-        $res = $this->call('GET', '/categories?sort=name');
+        $res = $this->call('GET', '/categories?sort=name&direction=desc');
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
@@ -603,7 +606,7 @@ class CategoryControllerTest extends TestCase
             $this->assertEquals($categories[$i]->id, $results->entities[$i]->id);
         }
 
-        $res = $this->call('GET', '/categories?sort=name&direction=asc');
+        $res = $this->call('GET', '/categories?sort=name');
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
@@ -780,7 +783,7 @@ class CategoryControllerTest extends TestCase
             $this->assertEquals($categories[9 - $i]->id, $results->entities[$i]->id);
         }
 
-        $res = $this->call('GET', '/categories/trash?sort=name');
+        $res = $this->call('GET', '/categories/trash?sort=name&direction=desc');
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
@@ -788,7 +791,7 @@ class CategoryControllerTest extends TestCase
             $this->assertEquals($categories[$i]->id, $results->entities[$i]->id);
         }
 
-        $res = $this->call('GET', '/categories/trash?sort=name&direction=asc');
+        $res = $this->call('GET', '/categories/trash?sort=name');
         $this->assertEquals(200, $res->getStatusCode());
         $results = json_decode($res->getContent());
         $this->assertEquals(10, count($results->entities));
