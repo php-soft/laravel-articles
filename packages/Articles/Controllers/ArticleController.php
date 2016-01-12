@@ -27,7 +27,7 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title'       => 'required',
+            'title'       => 'required|string',
             'content'     => 'required',
             'category_id' => 'required|numeric|exists:article_categories,id',
             'alias'       => 'regex:/^[a-z0-9\-]+/',
