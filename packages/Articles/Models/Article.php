@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Str;
-use Webpatser\Uuid\Uuid;
 
 class Article extends Model
 {
@@ -28,7 +27,7 @@ class Article extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'category_id', 'title', 'content', 'alias', 'image', 'description', 'order'];
+    protected $fillable = ['user_id', 'category_id', 'title', 'content', 'alias', 'image', 'description', 'order', 'status'];
 
     /**
      * Make relationship to category.
@@ -58,8 +57,7 @@ class Article extends Model
     public static function create(array $attributes = [])
     {
         if (empty($attributes['alias'])) {
-            $attributes['alias'] = Str::slug($attributes['title'])
-                .'-'. Uuid::generate(4);
+            $attributes['alias'] = Str::slug($attributes['title']);
         }
 
         $attributes['user_id'] = Auth::user()->id;
@@ -82,8 +80,7 @@ class Article extends Model
                 $title = $attributes['title'];
             }
 
-            $attributes['alias'] = Str::slug($title)
-                .'-'.Uuid::generate(4);
+            $attributes['alias'] = Str::slug($title);
         }
 
         if (!parent::update($attributes)) {

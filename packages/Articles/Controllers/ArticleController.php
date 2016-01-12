@@ -33,7 +33,8 @@ class ArticleController extends Controller
             'alias'       => 'regex:/^[a-z0-9\-]+/',
             'image'       => 'string',
             'description' => 'string',
-            'order'       => 'numeric'
+            'order'       => 'numeric',
+            'status'      => 'integer'
         ]);
 
         if ($validator->fails()) {
@@ -75,7 +76,8 @@ class ArticleController extends Controller
             'alias'       => 'regex:/^[a-z0-9\-]+/',
             'image'       => 'string',
             'description' => 'string',
-            'order'       => 'numeric'
+            'order'       => 'numeric',
+            'status'      => 'integer'
         ]);
 
         if ($validator->fails()) {
