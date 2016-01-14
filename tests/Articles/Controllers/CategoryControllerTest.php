@@ -1,5 +1,6 @@
 <?php
 
+use PhpSoft\Articles\Models\Article;
 use PhpSoft\Articles\Models\Category;
 
 class CategoryControllerTest extends TestCase
@@ -463,6 +464,20 @@ class CategoryControllerTest extends TestCase
 
         $res = $this->call('DELETE', '/categories/0');
         $this->assertEquals(404, $res->getStatusCode());
+    }
+
+    public function testDeleteWithReferenceArticle()
+    {
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create(['category_id' => $category->id]);
+
+        $user = factory(App\User::class)->make([ 'hasRole' => true ]);
+        Auth::login($user);
+
+        $res = $this->call('DELETE', "/categories/{$category->id}");
+        $this->assertEquals(403, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertEquals('Can not delete this category. You must to delete article before deleting category.', $results->message);
     }
 
     public function testDeleteSuccess()
