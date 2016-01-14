@@ -275,9 +275,9 @@ class CategoryController extends Controller
 
         // check reference article
         $articleModel = config('phpsoft.article.articleModel');
-        $hasArticle = $articleModel::where('category_id', $id)->count();
+        $hasArticles = $articleModel::where('category_id', $id)->count();
 
-         if ($hasArticle) {
+         if ($hasArticles) {
              return response()->json(arrayView('phpsoft.articles::errors/validation', [
                   'errors' => ['Can not delete this category. You must to delete article before deleting category.']
              ]), 403);
