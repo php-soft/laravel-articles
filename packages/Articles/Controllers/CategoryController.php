@@ -275,7 +275,7 @@ class CategoryController extends Controller
 
         // check reference article\
         $articleModel = config('phpsoft.article.articleModel');
-        $article = $articleModel::where('category_id', $id)->first();
+        $article = $articleModel::where('category_id', $id)->count();
 
          if ($article) {
              return response()->json(arrayView('phpsoft.articles::errors/validation', [
