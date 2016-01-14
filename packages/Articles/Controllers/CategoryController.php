@@ -273,6 +273,16 @@ class CategoryController extends Controller
             return response()->json(null, 404);
         }
 
+        // check reference article
+        $articleModel = config('phpsoft.article.articleModel');
+        $hasArticles = $articleModel::where('category_id', $id)->count();
+
+         if ($hasArticles) {
+             return response()->json(arrayView('phpsoft.articles::errors/validation', [
+                  'errors' => ['Can not delete this category. You must to delete article before deleting category.']
+             ]), 403);
+         }
+
         $category->forceDelete();
 
         return response()->json(null, 204);
