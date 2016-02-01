@@ -73,7 +73,7 @@ class Article extends Model
      */
     public function update(array $attributes = [])
     {
-        if (isset($attributes['alias']) && empty($attributes['alias'])) {
+        if ((isset($attributes['alias']) && empty($attributes['alias'])) || (!isset($attributes['alias']) && isset($attributes['title']))) {
             $title = $this->title;
 
             if (isset($attributes['title'])) {
