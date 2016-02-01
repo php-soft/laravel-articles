@@ -247,6 +247,23 @@ class ArticleControllerTest extends TestCase
         $this->assertNotEquals($article->alias, $results->entities[0]->alias);
     }
 
+    public function testUpdateAliasWhenUpdateTitle()
+    {
+        $category = factory(Category::class)->create();
+        $article = factory(Article::class)->create();
+
+        $user = factory(App\User::class)->create();
+        Auth::login($user);
+
+        $res = $this->call('PATCH', '/articles/' . $article->id, [
+            'title' => 'the new article',
+        ]);
+        $this->assertEquals(200, $res->getStatusCode());
+        $results = json_decode($res->getContent());
+        $this->assertNotEquals($article->alias, $results->entities[0]->alias);
+        $this->assertEquals('the-new-article', $results->entities[0]->alias);
+    }
+
     public function testMoveToTrash()
     {
         // test don't login
