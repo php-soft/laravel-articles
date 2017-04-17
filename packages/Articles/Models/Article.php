@@ -175,4 +175,21 @@ class Article extends Model
             'data'   => $find->get(),
         ];
     }
+
+    /**
+     * Find by id or alias
+     *
+     * @param  string $idOrAlias
+     * @return Category
+     */
+    public static function findByIdOrAlias($idOrAlias)
+    {
+        $article = parent::find($idOrAlias);
+
+        if ($article) {
+            return $article;
+        }
+
+        return parent::where('alias', $idOrAlias)->first();
+    }
 }
